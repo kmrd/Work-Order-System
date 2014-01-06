@@ -131,20 +131,58 @@ class Customer_Controller extends Controller {
 
 	public function find() {
 
-		$data = arr::extract(($this->input->post()) ? $this->input->post() : array(), 'fname', 'lname','phone');
+		$data = arr::extract(($this->input->post()) ? $this->input->post() : array(), 'fname', 'lname','phone','year','model','make');
 
-		if($this->input->post()) {
-			$customers = ORM::factory('customer')->like(array('fname' => $data['fname'], 'lname' => $data['lname'], 'phone' => $data['phone']))->find_all();
+		// initial batch of customers
+		//$customers = ORM::factory('customer');
+		
+		echo '<br /><br /><br />';
+
+		// state flag -- assume we have no customers found
+		//$posted = false;
+
+		if($this->input->post())
+		{
+			if((strlen($data['fname']) > 0) || (strlen($data['lname']) > 0) || (strlen($data['phone']) > 0))
+			{
+				if((strlen($data['year']) > 0) || (strlen($data['make']) > 0) || (strlen($data['model']) > 0)) // filter via customer AND car information
+				{
+					$db = new Database;
+					//$customers = $db->query('SELECT distinct cu.* FROM customers cu, cars ca WHERE cu.fname LIKE "%'.$data['fname'].'%" AND cu.lname LIKE "%'.$data['lname'].'%" AND cu.phone LIKE "%'.$data['phone'].'%" AND ca.customer_id = cu.id AND ca.year LIKE "%'.$data['year'].'%" AND ca.make LIKE "%'.$data['make'].'%" AND ca.make LIKE "%'.$data['model'].'%"');
+
+					//$customers = ORM::factory('customer')->like(array('fname' => $data['fname'], 'lname' => $data['lname'], 'phone' => $data['phone']))->find_all();
+					$customers = ORM::factory('customer')->from('cars')->where('customers.fname LIKE "%'.$data['fname'].'%" AND customers.lname LIKE "%'.$data['lname'].'%" AND customers.phone LIKE "%'.$data['phone'].'%" AND cars.customer_id = customers.id AND cars.year LIKE "%'.$data['year'].'%" AND cars.make LIKE "%'.$data['make'].'%" AND cars.model LIKE "%'.$data['model'].'%"')->find_all();
+					var_dump($customers);
+				}
+				else
+				{
+					$customers = ORM::factory('customer')->like(array('fname' => $data['fname'], 'lname' => $data['lname'], 'phone' => $data['phone']))->find_all();
+				}
+			}
+			// no customer information provided: filter per a car only
+			elseif((strlen($data['year']) > 0) || (strlen($data['make']) > 0) || (strlen($data['model']) > 0))
+			{
+				$cars = ORM::factory('car')->like(array('year' => $data['year'], 'model' => $data['model'], 'make' => $data['make']))->find_all();
+
+				$customers = array();
+				foreach($cars as $car)
+				{
+					array_push($customers, $car->customer);
+				}
+			}
+
 			$posted = true;
-		} else {
-			$customers = ORM::factory('customer');
+		}
+		else {
+			
 			$posted = false;
 		}
 
 		$body = View::factory('customer_find');
 		$body->data = $data;
 		$body->posted = $posted;
-		$body->customers = $customers;
+		if(isset($customers))
+			$body->customers = $customers;
 		$body->render();
 		
 		$template = View::factory('template');

@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') OR die('No direct access allowed.');
 
-class Order_Model extends ORM {
+class Part_Model extends ORM {
 
-	protected $belongs_to = array('customer','car');
+	protected $belongs_to = array('orders');
 
-	protected $has_many = array('images','services','parts');
+	//protected $has_many = array('images');
 	
 	//protected $has_one = array();
 
@@ -30,13 +30,12 @@ class Order_Model extends ORM {
 		// Initialise the validation library and setup some rules
 		$array = Validation::factory($array)
 				->pre_filter('trim')
-				//->add_rules('mileage', 'trim')
-				->add_rules('worktype', 'trim')
-				->add_rules('servicedate', 'trim')
-				//->add_rules('total', 'trim')
-				//->add_rules('tax', 'trim')
-				//->add_rules('discount', 'trim')
-				->add_rules('notes', 'trim')
+				->add_rules('name', 'required')
+				//->add_rules('worktype', 'trim')
+				//->add_rules('service', 'trim')
+				//->add_rules('servicedate', 'trim')
+				//->add_rules('parts', 'trim')
+				//->add_rules('notes', 'trim')
 				;
 
 		

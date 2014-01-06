@@ -88,11 +88,19 @@
 													<div class="panel-body">
 														<div class="col-md-4">
 															<h4>Service</h4>
-															<? echo $order->service; ?>
+															<dl>
+																<? foreach($order->services as $service): ?>
+																	<dd><? echo $service->name; ?></dd>
+																<? endforeach; ?>
+															</dl>
 														</div>
 														<div class="col-md-4">
 															<h4>Parts</h4>
-															<? echo $order->parts; ?>
+															<dl>
+																<? foreach($order->parts as $part): ?>
+																	<dd><? echo $part->name; ?></dd>
+																<? endforeach; ?>
+															</dl>
 														</div>
 														<div class="col-md-4">
 															<h4>Notes</h4>

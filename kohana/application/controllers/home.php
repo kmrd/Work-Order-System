@@ -71,6 +71,11 @@ class Home_Controller extends Controller {
 		echo $template;
 	}
 
+	public function generatepassword()
+	{
+		echo Auth::instance()->hash_password('1214');
+	}
+
 	public function logout()
 	{
 		$this->auth->logout();

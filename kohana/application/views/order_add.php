@@ -1,16 +1,24 @@
 <? echo form::open(null, array('class' => 'form-horizontal')); ?>
 <div class="container">
 
-	<h2>Add Work Order <small><a href="/customer/view/<? echo $car->customer->id; ?>" class="btn btn-primary btn-xs">Back to Customer</a></small></h2>
+	<h2>Add Work Order</h2>
+	<p><a href="/customer/view/<? echo $car->customer->id; ?>" class="btn btn-primary btn-xs">Back to Customer</a></p>
 	<dl>
-		<dt class="col-xs-1">Customer</dt><dd><? echo $car->customer->fname.' '.$car->customer->lname; ?></dd>
-		<dt class="col-xs-1">Car</dt><dd><? echo $car->year.' '.$car->make.' '.$car->model; ?></dd>
-		<dt class="col-xs-1">Color</dt><dd><? echo (strlen($car->color) > 0) ? $car->color : '---'; ?></dd>
-		<dt class="col-xs-1">Trim</dt><dd><? echo (strlen($car->trim) > 0) ? $car->trim : '---'; ?></dd>
-		<dt class="col-xs-1">VIN</dt><dd><? echo (strlen($car->trim) > 0) ? $car->vin : '---'; ?></dd>
+		<dt class="col-xs-4 col-sm-2">Customer</dt><dd class="col-xs-8 col-sm-10"><? echo $car->customer->fname.' '.$car->customer->lname; ?></dd>
+		<dt class="col-xs-4 col-sm-2">Car</dt><dd class="col-xs-8 col-sm-10"><? echo $car->year.' '.$car->make.' '.$car->model; ?></dd>
+		<dt class="col-xs-4 col-sm-2">Color</dt><dd class="col-xs-8 col-sm-10"><? echo (strlen($car->color) > 0) ? $car->color : '---'; ?></dd>
+		<dt class="col-xs-4 col-sm-2">Trim</dt><dd class="col-xs-8 col-sm-10"><? echo (strlen($car->trim) > 0) ? $car->trim : '---'; ?></dd>
+		<dt class="col-xs-4 col-sm-2">VIN</dt><dd class="col-xs-8 col-sm-10"><? echo (strlen($car->trim) > 0) ? $car->vin : '---'; ?></dd>
 	</dl>
 
-	<div class="clear"></div>
+	<div class="clearfix sep"></div>
+
+	<hr class="col-xs-10 col-sm-8" />
+
+	<div class="clearfix sep hidden-xs"></div>
+	<div class="clearfix visible-xs"></div>
+
+
 
 	<? if(isset($errors) AND (sizeof($errors) > 0)): ?>
 		<p class="alert alert-danger">
@@ -18,10 +26,12 @@
 		</p>
 	<? endif; ?>
 
-	<div class="form-group <? echo (isset($errors['servicedate'])) ? 'has-error' : ''; ?>">
-		<? echo form::label('servicedate','Date:','class="col-sm-2 control-label"'); ?>
 
-		<div class="col-sm-6">
+
+	<div class="form-group">
+		<? echo form::label('servicedate','Date:','class="col-xs-12 col-sm-2 control-label"'); ?>
+
+		<div class="col-xs-12 col-sm-3 col-lg-2">
 			<div class="input-group datepicker input-append date" id="datetimepicker1">
 				<input data-format="MM/dd/yyyy" type="text" name='servicedate' class="form-control" placeholder='mm/dd/yyyy'>
 				<span class="input-group-addon add-on">
@@ -34,15 +44,20 @@
 		<? endif; ?>
 	</div>
 
+
+
 	<div class="form-group <? echo (isset($errors['mileage'])) ? 'has-error' : ''; ?>">
-		<? echo form::label('mileage','Mileage:','class="col-sm-2 control-label"'); ?>
-		<div class="col-sm-6">
-			<? echo form::input('mileage', $data['mileage'], 'class="form-control"'); ?>
+		<? echo form::label('mileage','Mileage:','class="col-xs-12 col-sm-2 control-label"'); ?>
+		<div class="col-xs-12 col-sm-3 col-lg-2 input-group">
+			<? echo form::input('mileage', $data['mileage'], 'class="form-control" placeholder="200000"'); ?>
+  			<span class="input-group-addon">km</span>
 		</div>
 		<? if(isset($errors['mileage'])) : ?>
 			<p class="col-sm-4 help-block"><? echo $errors['mileage']; ?></p>
 		<? endif; ?>
 	</div>
+
+
 
 	<div class="form-group <? echo (isset($errors['worktype'])) ? 'has-error' : ''; ?>">
 		<? echo form::label('worktype','Worktype:','class="col-sm-2 control-label"'); ?>
@@ -54,27 +69,107 @@
 		<? endif; ?>
 	</div>
 
+
+
+
 	<div class="clearfix sep"></div>
 
-	<div class="form-group <? echo (isset($errors['service'])) ? 'has-error' : ''; ?>">
-		<? echo form::label('service','Service Performed:','class="col-sm-2 control-label"'); ?>
-		<div class="col-sm-6">
-			<? echo form::textarea('service', $data['service'], 'class="form-control" rows="5"'); ?>
+
+
+
+	<div class="form-group">
+
+		<? echo form::label('parts','Parts Used:','class="col-xs-12 col-sm-2 control-label"'); ?>
+
+		<div class="col-xs-6 col-sm-3 col-md-4">
+			<? echo form::input('parts[]', $data['parts'], 'class="form-control name" placeholder=""'); ?>
 		</div>
-		<? if(isset($errors['service'])) : ?>
-			<p class="col-sm-4 help-block"><? echo $errors['service']; ?></p>
-		<? endif; ?>
+
+		<div class="col-xs-6 col-sm-3 col-md-2">
+			<div class="input-group">
+				<span class="input-group-addon">$</span>
+				<? echo form::input('partsprice[]', null, 'class="form-control price text-right" placeholder=""'); ?>
+				<span class="input-group-btn">
+					<button class="btn btn-primary addrow" type="button"><span class="glyphicon glyphicon-plus-sign"></span></button>
+				</span>
+			</div>
+		</div>
+
+		<? /* if(isset($errors['service'])) : ?>
+			<p class="col-xs-4 help-block"><? echo $errors['service']; ?></p>
+		<? endif; */ ?>
 	</div>
 
-	<div class="form-group <? echo (isset($errors['parts'])) ? 'has-error' : ''; ?>">
-		<? echo form::label('parts','Parts Used:','class="col-sm-2 control-label"'); ?>
-		<div class="col-sm-6">
-			<? echo form::textarea('parts', $data['parts'], 'class="form-control" rows="5"'); ?>
+	<? /* foreach */ ?>
+	<? /*
+	<div class="form-group">
+		<div class="col-xs-6 col-sm-3 col-md-4 col-sm-offset-2">
+			<? echo form::input('parts[]', null, 'class="form-control name" placeholder=""'); ?>
 		</div>
-		<? if(isset($errors['parts'])) : ?>
-			<p class="col-sm-4 help-block"><? echo $errors['parts']; ?></p>
-		<? endif; ?>
+
+		<div class="col-xs-6 col-sm-3 col-md-2">
+			<div class="input-group">
+				<span class="input-group-addon">$</span>
+				<? echo form::input('serviceprice[]', null, 'class="form-control price text-right" placeholder=""'); ?>
+				<span class="input-group-btn">
+					<button class="btn btn-primary addrow" type="button"><span class="glyphicon glyphicon-plus-sign"></span></button>
+				</span>
+			</div>
+		</div>
 	</div>
+	*/ ?>
+	<? /* foreach */ ?>
+
+
+
+	<div class="clearfix sep"></div>
+
+
+
+	<div class="form-group">
+
+		<? echo form::label('service','Services:','class="col-xs-12 col-sm-2 control-label"'); ?>
+
+		<div class="col-xs-6 col-sm-3 col-md-4">
+			<? echo form::input('services[]', null, 'class="form-control name" placeholder=""'); ?>
+		</div>
+
+		<div class="col-xs-6 col-sm-3 col-md-2">
+			<div class="input-group">
+				<span class="input-group-addon">$</span>
+				<? echo form::input('serviceprice[]', null, 'class="form-control price text-right" placeholder=""'); ?>
+				<span class="input-group-btn">
+					<button class="btn btn-primary addrow" type="button"><span class="glyphicon glyphicon-plus-sign"></span></button>
+				</span>
+			</div>
+		</div>
+	</div>
+
+	<? /* foreach */ ?>
+	<? /*
+	<div class="form-group">
+		<div class="col-xs-6 col-sm-3 col-md-4 col-sm-offset-2">
+			<? echo form::input('services[]', null, 'class="form-control name" placeholder=""'); ?>
+		</div>
+
+		<div class="col-xs-6 col-sm-3 col-md-2">
+			<div class="input-group">
+				<span class="input-group-addon">$</span>
+				<? echo form::input('serviceprice[]', null, 'class="form-control price text-right" placeholder=""'); ?>
+				<span class="input-group-btn">
+					<button class="btn btn-primary addrow" type="button"><span class="glyphicon glyphicon-plus-sign"></span></button>
+				</span>
+			</div>
+		</div>
+	</div>
+	*/ ?>
+	<? /* foreach */ ?>
+
+
+
+	<div class="clearfix sep"></div>
+
+
 
 	<div class="form-group <? echo (isset($errors['notes'])) ? 'has-error' : ''; ?>">
 		<? echo form::label('notes','Notes:','class="col-sm-2 control-label"'); ?>
@@ -86,8 +181,11 @@
 		<? endif; ?>
 	</div>
 
+
 	
 	<div class="clearfix sep"></div>
+
+
 
 	<div class="form-group">
 		<div class="col-sm-offset-2 col-sm-10">
