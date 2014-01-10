@@ -78,7 +78,10 @@
 										<? foreach($car->orders as $index => $order): ?>
 											<div class="panel panel-default">
 												<div class="panel-heading">
-													<a href="/order/edit/<? echo $order->id; ?>" class="pull-right btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+													<div class="pull-right">
+														<a href="/order/edit/<? echo $order->id; ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+														<a href="/order/printly/<? echo $order->id; ?>" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-print"></span> Print</a>
+													</div>
 													<h4 class="panel-title">
 														<a data-toggle="collapse" data-parent="#accordion" href="#collapse-<? echo $carindex; ?>-<? echo $index;?>"><? echo $order->worktype; ?></a>
 														<small><? echo (strlen($order->mileage) > 0) ? $order->mileage : '---'; ?>km | <? echo date('D, M d, Y', strtotime($order->servicedate)); ?></small>

@@ -1,4 +1,15 @@
 $(document).ready(function(){
+	// make the autocomplete ajax request use post
+	$.ajaxSetup( { type: "post" } );
+
+	$( "#worktype" ).autocomplete({
+		source : '/order/suggest',
+		minLength : 1
+	});
+});
+
+// delete confirmation button lock-out
+$(document).ready(function(){
 	$('a.confirm').on("click", confirmlink);
 });
 
@@ -8,6 +19,8 @@ function confirmlink(e){
 
 }
 
+
+// date picker field add-on
 $(document).ready(function() {
 	$('.datepicker').each(function(index, el) {
 		$(el).datetimepicker({
@@ -25,6 +38,7 @@ $(document).ready(function() {
 	});
 });
 
+// functioning of +/- rows for parts & service sections
 $(document).ready(function(){
 	// assign add buttons
 	$('.addrow').each(function(index, el)  {

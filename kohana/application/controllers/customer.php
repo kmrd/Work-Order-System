@@ -136,8 +136,6 @@ class Customer_Controller extends Controller {
 		// initial batch of customers
 		//$customers = ORM::factory('customer');
 		
-		echo '<br /><br /><br />';
-
 		// state flag -- assume we have no customers found
 		//$posted = false;
 

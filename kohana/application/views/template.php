@@ -69,6 +69,7 @@
 	          <ul class="nav navbar-nav">
 	            <li><a href="/customer/add">Add Customer</a></li>
 	            <li><a href="/customer/find">Find Customer</a></li>
+	            <li><a href="/order/find">Find Job</a></li>
 	          </ul>
 	          <ul class="nav navbar-nav navbar-right">
 	          	<li class="navbar-right"><a href="/logout">Logout</a></li>
@@ -107,6 +108,7 @@
 ?>
 
 <script src="/assets/js/jquery-1.10.2.min.js"></script>
+<? // <script src="/assets/js/jquery-1.9.1.min.js"></script> ?>
 <script src="/assets/js/bootstrap.min.js"></script>
 <script src="/assets/js/less-1.5.0.min.js"></script>
 <script src="/assets/js/bootstrap-datetimepicker.min.js"></script>

@@ -1,7 +1,7 @@
 <div class="row">
 	<? echo form::open(null, array('class' => '')); ?>
 		<div class="col-md-6">
-			<h1 class="">Search</h1>
+			<h1 class="">Search Customers</h1>
 			<p>You can use any or all fields</p>
 			<? echo form::input('fname', $data['fname'], 'class="form-control input-lg" placeholder="first name" autofocus'); ?>
 			<? echo form::input('lname', $data['lname'], 'class="form-control input-lg" placeholder="last name"'); ?>

@@ -152,14 +152,60 @@ class Order_Controller extends Controller {
 		$body->render();
 		
 		$template = View::factory('template');
-		$template->css = array('bootstrap-datetimepicker.min');
-		$template->js = array('bootstrap-datetimepicker.min', 'order');
+		$template->css = array('bootstrap-datetimepicker.min','jquery-ui-1.10.0.custom');
+		$template->js  = array('bootstrap-datetimepicker.min','jquery-ui-1.10.3.custom.min','order');
 		$template->title = 'Add Work Order';
 		$template->content = $body;
 		echo $template->render();
 	}
 
+	public function printly($orderid = false) {
+		if($orderid === false)
+			url::redirect('/');
 
+		$order = ORM::factory('order', $orderid);
+
+		if(!$order->loaded)
+			url::redirect('/');
+
+		// calculate the subtotal & tax total
+		// keep running track of the price (represented as an integer: ie. 5.99 => 599)
+		$itemtotal = 0;
+
+		// handle the parts
+		foreach($order->parts as $part)
+		{
+			// increase our item total
+			$itemtotal += $part->price * 100;
+		}
+
+		// handle the service
+		foreach($order->services as $service)
+		{
+			// increase our item total
+			$itemtotal += $service->price * 100;
+		}
+
+		// calculate the subtotal & tax
+		$subtotal = ($itemtotal - $order->discount) * 100;
+		$taxamt = ($subtotal / 100) * ($order->tax / 100 / 100);
+
+		$body = View::factory('order_print');
+		$body->car = $order->car;
+		$body->order = $order;
+		$body->subtotal = $subtotal;
+		$body->taxamt = $taxamt;
+		$body->render();
+		
+		$template = View::factory('template');
+		$template->title = 'Print Work Order';
+		$template->content = $body;
+		$template->js = array('print');
+		echo $template->render();
+	}
+
+
+	/*
 	public function view($carid = false) {
 		url::check_login_return('/'); // check if we're logged in -- if not, go to login and come back here
 
@@ -180,6 +226,7 @@ class Order_Controller extends Controller {
 		$template->content = $body;
 		echo $template->render();
 	}
+	*/
 
 	public function upload($eatid = false)
 	{
@@ -236,6 +283,104 @@ class Order_Controller extends Controller {
 		$this->session->set('successstatus', 'Work order deleted.');
 
 		url::redirect('/customer/view/'.$customer_id);
+	}
+
+	public function find() {
+		$data = arr::extract(($this->input->post()) ? $this->input->post() : array(), 'job','year','model','make');
+
+		// state flag -- assume we have no customers found
+		//$posted = false;
+
+		if($this->input->post())
+		{
+			// make sure there's at least one criteria to search by:
+			if((strlen($data['job']) > 0) || (strlen($data['year']) > 0) || (strlen($data['make']) > 0) || (strlen($data['model']) > 0))
+			{
+				$db = new Database();
+
+				$querystr = 'SELECT distinct orders.* FROM orders, cars WHERE ';
+				$querywhere = array();
+
+				// build our query's where statement
+				if(strlen($data['job']) > 0)
+					//array_push($querywhere, ' orders.car_id = cars.id AND MATCH(orders.worktype) AGAINST ("'.$data['job'].'" IN BOOLEAN MODE)  '); // not compatible with innodb, need to be using MyISAM table
+					array_push($querywhere, ' orders.car_id = cars.id AND orders.worktype LIKE "%'.$data['job'].'%" '); // not compatible with innodb, need to be using MyISAM table
+				if(strlen($data['year']) > 0)
+					array_push($querywhere, ' cars.year LIKE "%'.$data['year'].'%" ');
+				if(strlen($data['make']) > 0)
+					array_push($querywhere, ' cars.make LIKE "%'.$data['make'].'%" ');
+				if(strlen($data['model']) > 0)
+					array_push($querywhere, ' cars.model LIKE "%'.$data['model'].'%" ');
+
+				$querystr .= implode(' AND ', $querywhere);
+				$querystr .= ' ORDER BY orders.servicedate DESC';
+
+				// run the query
+				$result = $db->query($querystr);
+
+				// setup the ORM:
+				$orders = array();
+				foreach($result as $row)
+				{
+					$order = ORM::factory('order', $row->id);
+					if($order->loaded)
+						array_push($orders, $order);
+				}
+			}
+
+			$posted = true;
+		}
+		else {
+			
+			$posted = false;
+		}
+
+		$body = View::factory('order_find');
+		$body->data = $data;
+		$body->posted = $posted;
+		if(isset($orders))
+			$body->orders = $orders;
+		$body->render();
+		
+		$template = View::factory('template');
+		$template->title = 'Find Customer';
+		$template->bodyclass = 'findcustomer';
+		$template->content = $body;
+		echo $template->render();
+	}
+
+	public function suggest() {
+
+		$terms = array();
+
+		if($this->input->post('term'))
+		{
+			$term = $this->input->post('term');
+			$db = new Database();
+			$query = "SELECT max(id) id, worktype
+						  FROM orders
+						 WHERE worktype like '%$term%'
+						 GROUP BY worktype
+						 ORDER BY CASE WHEN worktype like '$term %' THEN 0
+						               WHEN worktype like '$term%' THEN 1
+						               WHEN worktype like '% $term%' THEN 2
+						               ELSE 3
+						          END, worktype";
+			$result = $db->query($query);
+			foreach($result as $row)
+			{
+				array_push($terms, $row->worktype);
+			}
+
+			// simple query using ORM
+			//$orders = ORM::factory('order')->like( array('worktype' => $this->input->post('term')) )->find_all();
+			//foreach($orders as $order)
+			//{
+			//	array_push($terms, $order->worktype);
+			//}
+		}
+
+		echo json_encode($terms);
 	}
 
 }

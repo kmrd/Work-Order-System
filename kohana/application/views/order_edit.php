@@ -1,14 +1,18 @@
 <? echo form::open(null, array('class' => 'form-horizontal')); ?>
 <div class="container">
 
-	<h2>Add Work Order</h2>
-	<p><a href="/customer/view/<? echo $car->customer->id; ?>" class="btn btn-primary btn-xs">Back to Customer</a></p>
+	<p>
+		<a href="/customer/view/<? echo $car->customer->id; ?>" class="btn btn-primary btn-sm">Back to Customer</a>
+		<a href="/order/printly/<? echo $order->id; ?>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-print"></span> Print Layout</a>
+	</p>
+	<h2>Edit Work Order</h2>
+	<div class="clearfix"></div>
 	<dl>
 		<dt class="col-xs-4 col-sm-2">Customer</dt><dd class="col-xs-8 col-sm-10"><? echo $car->customer->fname.' '.$car->customer->lname; ?></dd>
 		<dt class="col-xs-4 col-sm-2">Car</dt><dd class="col-xs-8 col-sm-10"><? echo $car->year.' '.$car->make.' '.$car->model; ?></dd>
 		<dt class="col-xs-4 col-sm-2">Color</dt><dd class="col-xs-8 col-sm-10"><? echo (strlen($car->color) > 0) ? $car->color : '---'; ?></dd>
 		<dt class="col-xs-4 col-sm-2">Trim</dt><dd class="col-xs-8 col-sm-10"><? echo (strlen($car->trim) > 0) ? $car->trim : '---'; ?></dd>
-		<dt class="col-xs-4 col-sm-2">VIN</dt><dd class="col-xs-8 col-sm-10"><? echo (strlen($car->trim) > 0) ? $car->vin : '---'; ?></dd>
+		<dt class="col-xs-4 col-sm-2">VIN</dt><dd class="col-xs-8 col-sm-10"><? echo (strlen($car->vin) > 0) ? $car->vin : '---'; ?></dd>
 	</dl>
 
 	<div class="clearfix sep"></div>
